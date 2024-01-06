@@ -1,0 +1,36 @@
+#home-pane, #quest-manager-pane, #reward-store-pane {
+    background-color: antiquewhite;
+}
+
+.page-hidden {
+    display:none;
+}
+
+#user-info {
+    margin-top: -50px;
+    float: right;
+}
+
+#user-info #display-username {
+    color: inherit;
+}
+
+#user-info #display-currency {
+    color: #FCA311;
+    font-weight: bold;
+}
+
+.daily-quest-card {
+    margin-top: 7.5px;
+    margin-bottom: 7.5px;
+}
+
+.reward-card {
+    margin-top: 7.5px;
+    margin-bottom: 7.5px;
+}
+
+.quest-button-form, .reward-button-form {
+    float: right;
+    margin-left: 5px;
+}

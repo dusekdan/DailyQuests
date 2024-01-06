@@ -1,0 +1,9 @@
+{
+    "name": "Daily Quests",
+    "display": "standalone",
+    "icons": [{
+        "src": "app-icon.png",
+        "sizes": "471x471",
+        "type": "image/png"
+    }]
+}

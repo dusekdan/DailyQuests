@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="manifest" href="./manifest.json" />
+<link rel="stylesheet" href="app.css">
+
+<script src="./utils.js"></script>
+
+<!-- Javascript local storage database emulator (https://github.com/AlaSQL/alasql) -->
+<script src="https://cdn.jsdelivr.net/npm/alasql@4"></script>
+
+<!-- Side bar resources START-->
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css' rel='stylesheet'>
+<link href="./res/sidebar.css" rel="stylesheet">
+<script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js' defer></script>
+<script type='text/javascript' src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js' defer></script>
+<script type='text/javascript' src="./res/sidebar.js" defer></script>
+<!-- /Side bar resources STOP-->
+
+<script src="./_debug.js"></script>
+
+<script type="text/javascript" src="./service-worker.js"></script>
+<script type="text/javascript" src="./app.js" defer="defer"></script>
+</head>
+<body id="body-pd">
+    
+    <!-- SIDEBAR START -->
+    <div class="l-navbar" id="nav-bar">
+        <nav class="nav">
+            <div> 
+                <a href="#" class="nav_logo"> <i class='bx bx-layer nav_logo-icon' id="menu-toggle"></i></a>
+                
+                <div class="nav_list"> 
+                    <a href="#" class="nav_link active"> <i class='bx bx-calendar-alt nav_icon'></i> Daily Quests</a> 
+                    <a href="#" class="nav_link"> <i class='bx bx-store nav_icon'></i> Reward Store</a> 
+                    <a href="#" class="nav_link"> <i class='bx bx-folder-open nav_icon'></i> Manager</a> 
+                </div>
+            </div> 
+        </nav>
+    </div>
+    <!-- /SIDEBAR STOP -->
+
+    <!--
+        MAIN PAGE
+        
+        SEE AND COMPLETE DAILY QUESTS
+    -->
+    <div id="user-info">
+        <button class="button-sm btn-dark" onclick="_debug_createQuest()">+</button>
+        <span><span id="display-username">$USER</span>, <span id="display-currency">$CURRENCY</span> points</span>
+    </div>
+    
+    <div id="home-page" class="page-hidden">
+        <h2>Daily quests</h2>
+        <div id="home-pane">
+            <div class="row">
+                <div class="col-sm-12" id="daily-quests-pane">
+                    
+                </div>    
+            </div>
+        </div>
+    </div>
+
+    <!--    
+        REWARD 
+        STORE
+        PAGE
+    -->
+
+    <div id="reward-store" class="page-hidden">
+        <h2>Reward store</h2>
+        <div id="reward-store-pane">
+            <div class="row">
+                <div class="col-sm-12" id="reward-store-list">
+                    
+                </div>    
+            </div>
+        </div>
+    </div>
+
+
+    <!--
+        MANAGER
+        PAGE
+
+        ADD & REMOVE REWARD AND QUEST DEFINITIONS
+    -->
+
+    <div id="quest-manager" class="page-hidden">
+        <h2>Quest/Rewards manager</h2>
+        <div id="quest-manager-pane">
+
+            <h3>Add quest</h3>
+
+            <form action="#" id="add-quest-form">
+                <input placeholder="Quest name" type="text" id="add-quest-name">
+                <textarea placeholder="Describe quest objective." id="add-quest-description"></textarea> 
+                <input type="number" id="add-quest-reward-amount">
+                <select id="add-quest-category-select">
+                    <option value="Default">Default</option>
+                </select>
+                <input type="submit" value="Add quest definition">
+            </form>
+
+            <br>
+            <strong>List of quests</strong>
+            <ul id="quest-manager-quest-list">
+            </ul>
+
+            <hr>
+
+            <h3>Add reward</h3>
+            <form method="post" action="#" id="add-reward-form">
+                <input placeholder="Reward name" type="text" name="add-reward-name" id="add-reward-name">
+                <textarea placeholder="Describe what is the reward about" name="add-reward-description" id="add-reward-description"></textarea>
+                <input type="number" name="add-reward-cost" id="add-reward-cost">
+
+                <input type="submit" value="Add reward">
+            </form>
+
+            <br>
+            <strong>List of rewards</strong>
+            <ul id="reward-manager-rewards-list">
+            </ul>
+
+
+        </div>
+    </div>
+
+    <div id="error"></div>
+    <div id="debug"></div>
+
+</body>
+</html>
