@@ -1,5 +1,5 @@
-#home-pane, #quest-manager-pane, #reward-store-pane {
-    background-color: antiquewhite;
+#home-pane, #quest-manager-pane, #reward-store-pane, #reward-store, #quest-manager, body{
+    background-color: antiquewhite !important;
 }
 
 .page-hidden {

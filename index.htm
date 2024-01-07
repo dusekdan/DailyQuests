@@ -92,17 +92,37 @@
         <h2>Quest/Rewards manager</h2>
         <div id="quest-manager-pane">
 
-            <h3>Add quest</h3>
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>Add quest</h3>
+                    <form action="#" id="add-quest-form">
+                        <div class="input-group mb-3 input-group-sm">
+                            <span class="input-group-text" required>Name</span>
+                            <input placeholder="Quest name" type="text" id="add-quest-name" class="form-control">
+                        </div>
+                        
+                        <div class="input-group mb-3 input-group-sm">
+                            <textarea placeholder="Describe quest objective." id="add-quest-description" class="form-control"></textarea> 
+                        </div>
+                        
+                        <div class="input-group mb-3 input-group-sm">
+                            <span class="input-group-text">Reward</span>
+                            <input type="number" id="add-quest-reward-amount" class="form-control">
+                            <span class="input-group-text">points</span>
+                        </div>
 
-            <form action="#" id="add-quest-form">
-                <input placeholder="Quest name" type="text" id="add-quest-name">
-                <textarea placeholder="Describe quest objective." id="add-quest-description"></textarea> 
-                <input type="number" id="add-quest-reward-amount">
-                <select id="add-quest-category-select">
-                    <option value="Default">Default</option>
-                </select>
-                <input type="submit" value="Add quest definition">
-            </form>
+                        <div class="input-group mb-3 input-group-sm">
+                            <input class="form-control btn-dark" type="submit" value="Add quest definition">
+                            <select id="add-quest-category-select" class="form-control" disabled>
+                                <option value="Default">Default category</option>
+                            </select>    
+                        </div>
+                    </form>                    
+                </div>
+            </div>
+            
+
+            
 
             <br>
             <strong>List of quests</strong>
