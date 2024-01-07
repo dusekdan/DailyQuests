@@ -91,6 +91,10 @@ const main = () => {
     questManagerLoadList();
     rewardManagerLoadList();
     dailyQuestsLoad();
+
+    // Countdown init for daily quests page
+    updateDailyQuestsTimeRemaining();
+    setInterval(updateDailyQuestsTimeRemaining, 1000);
 }
 
 const displayPage = page => {
@@ -389,6 +393,7 @@ const addRewardFormSubmit = event => {
     rewardStoreLoad();
 }
 
+
 const addQuestFormSubmit = event => {
     event.preventDefault();
 
@@ -404,6 +409,21 @@ const addQuestFormSubmit = event => {
 }
 
 
+const updateDailyQuestsTimeRemaining = () => {
+    // Get current date and time in seconds since epoch
+    let todayDate = new Date();
+    let currentTimeSeconds = Util.getSecondsSinceEpoch(todayDate);
+    todayDate.setHours(23, 59, 59);
+
+    let todayEndTimeSeconds = Util.getSecondsSinceEpoch(todayDate);
+    let secondsTillDayEnds = todayEndTimeSeconds - currentTimeSeconds;
+
+    let countDown = document.getElementById("daily-quests-time-remaining");
+    let readable = Util.secondsToHumanReadableTimeRemaining(secondsTillDayEnds);
+    
+    // daily = 0d - we dont need that part
+    countDown.innerText = readable.substr(2); 
+}
 
 
 const getActiveLinkName = () => {
