@@ -148,7 +148,7 @@ const rewardStoreLoad = () => {
 
         let rewardCardHtml = "<div class=\"card-body\">";
         rewardCardHtml += "<h5 class=\"card-title\">" + rewards[i].rewardName + " ";
-        rewardCardHtml += "<span class\"badge bg-warning\"> Price: " + rewards[i].rewardCost;
+        rewardCardHtml += "<span class=\"badge bg-warning\"> Price: " + rewards[i].rewardCost;
         rewardCardHtml += " points</span></h5>"
         rewardCardHtml += "<p>" + rewards[i].rewardDescription + "</p>";
         rewardCardHtml += "<form class='reward-button-form' onsubmit='buyReward(\""+ rewards[i].rewardId +"\")'>";
