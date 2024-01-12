@@ -344,9 +344,15 @@ const questManagerLoadList = () => {
     
     managerQuestList.replaceChildren();
     for (let i = 0; i < quests.length; i++) {
-        let liElement = document.createElement("li");
-        liElement.innerHTML = "[" + quests[i].questRewardAmount  + " points] " + quests[i].questName + " (" + quests[i].questDescription + ") <form style=float:right; onsubmit='managerQuestRemove(\"" + quests[i].questId + "\")'><button value='remove'>Remove quest definition permanently</button><form>";
-        managerQuestList.appendChild(liElement);
+        let tr = document.createElement("tr");
+
+        let trHtmlContents = "<td>" + quests[i].questName + "</td>"
+        trHtmlContents += "<td>" + quests[i].questDescription + "</td>"
+        trHtmlContents += "<td>"+ quests[i].questRewardAmount +"</td>"
+        trHtmlContents += "<td><form onsubmit='managerQuestRemove(\"" + quests[i].questId + "\")'><button class='btn btn-sm btn-danger' value='remove'>❌</button><form></td>"
+        
+        tr.innerHTML = trHtmlContents;
+        managerQuestList.appendChild(tr);
     }
 }
 
@@ -356,9 +362,15 @@ const rewardManagerLoadList = () => {
 
     managerRewardList.replaceChildren();
     for (let i = 0; i < rewards.length; i++) {
-        let liElement = document.createElement("li");
-        liElement.innerHTML = "[Cost: " + rewards[i].rewardCost  + " points] " + rewards[i].rewardName + " (" + rewards[i].rewardDescription + ") <form style=float:right; onsubmit='managerRewardRemove(\"" + rewards[i].rewardId + "\")'><button value='remove'>Remove reward definition permanently</a><form>";
-        managerRewardList.appendChild(liElement);
+        let tr = document.createElement("tr");
+        
+        let trHtmlContents = "<td>" + rewards[i].rewardName + "</td>";
+        trHtmlContents += "<td>" + rewards[i].rewardDescription + "</td>";
+        trHtmlContents += "<td>" + rewards[i].rewardCost + "</td>";
+        trHtmlContents += "<td><form onsubmit='managerRewardRemove(\"" + rewards[i].rewardId + "\")'><button class='btn btn-sm btn-danger'>❌</form></td>";
+        
+        tr.innerHTML = trHtmlContents;
+        managerRewardList.appendChild(tr);
     }
 }
 

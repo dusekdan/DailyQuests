@@ -89,12 +89,13 @@
     -->
 
     <div id="quest-manager" class="page-hidden">
-        <h2>Quest/Rewards manager</h2>
+        <h2>Quest and Rewards manager</h2>
+        <br>
         <div id="quest-manager-pane">
 
             <div class="row">
                 <div class="col-sm-12">
-                    <h3>Add quest</h3>
+                    <h4>Add quest</h4>
                     <form action="#" id="add-quest-form">
                         <div class="input-group mb-3 input-group-sm">
                             <span class="input-group-text" required>Name</span>
@@ -122,28 +123,80 @@
             </div>
             
 
-            
-
-            <br>
-            <strong>List of quests</strong>
-            <ul id="quest-manager-quest-list">
-            </ul>
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table table-sm caption-top">
+                        <caption><strong>Managing existing quests</strong></caption>
+                        <thead>
+                            <tr>
+                                <th>Quest name</th>
+                                <th>Description</th>
+                                <th>Points</th>
+                                <th>❌</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quest-manager-quest-list">
+                            <tr>
+                                <td>$placeholder</td>
+                                <td>To be honest, you should not be seeing this. This will only appear if the quest manager load list function fails.</td>
+                                <td>300</td>
+                                <td><button value="delete">❌</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             <hr>
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4>Add reward</h4>
+                    <form method="post" action="#" id="add-reward-form">
+                        <div class="input-group mb-3 input-group-sm">
+                            <span class="input-group-text" required>Name</span>
+                            <input placeholder="Reward name" type="text" id="add-reward-name" class="form-control">
+                        </div>
+                        
+                        <div class="input-group mb-3 input-group-sm">
+                            <textarea placeholder="Describe what is the reward about." id="add-reward-description" class="form-control"></textarea> 
+                        </div>
 
-            <h3>Add reward</h3>
-            <form method="post" action="#" id="add-reward-form">
-                <input placeholder="Reward name" type="text" name="add-reward-name" id="add-reward-name">
-                <textarea placeholder="Describe what is the reward about" name="add-reward-description" id="add-reward-description"></textarea>
-                <input type="number" name="add-reward-cost" id="add-reward-cost">
+                        <div class="input-group mb-3 input-group-sm">
+                            <span class="input-group-text">Cost</span>
+                            <input type="number" id="add-reward-cost" class="form-control">
+                            <span class="input-group-text">points</span>
+                        </div>
 
-                <input type="submit" value="Add reward">
-            </form>
+                        <div class="input-group mb-3 input-group-sm">
+                            <input class="form-control btn-dark" type="submit" value="Add reward">  
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-            <br>
-            <strong>List of rewards</strong>
-            <ul id="reward-manager-rewards-list">
-            </ul>
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table table-sm caption-top">
+                        <caption><strong>Managing existing rewards</strong></caption>
+                        <thead>
+                            <tr>
+                                <th>Reward name</th>
+                                <th>Description</th>
+                                <th>Cost</th>
+                                <th>❌</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reward-manager-rewards-list">
+                            <tr>
+                                <td>$placeholder</td>
+                                <td>You should not be seeing this, unless rewardManagerLoadList function failed.</td>
+                                <td>100</td>
+                                <td><button value="delete">❌</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
 
         </div>
