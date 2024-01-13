@@ -196,11 +196,8 @@ const buyReward = rewardId => {
 }
 
 const getDailyQuests = () => {
-    let todayDate = new Date();
-    todayDate.setHours(0,0,0);
-    let todayStart = Util.getSecondsSinceEpoch(new Date(todayDate));
-    todayDate.setHours(23, 59, 59);
-    let todayEnd = Util.getSecondsSinceEpoch(new Date(todayDate));
+    let todayStart = Util.getDayStartEnd(new Date())[0];
+    let todayEnd = Util.getDayStartEnd(new Date())[1];
 
     return alasql("SELECT * FROM " + QuestsTableName + " WHERE activeStart BETWEEN ? AND ? AND activeEnd BETWEEN ? AND ? AND questStatus == 'ASSIGNED'", [todayStart, todayEnd, todayStart, todayEnd]);
 }
@@ -501,11 +498,8 @@ const addQuestsRandomly = event => {
     console.log("quests to add length= " + questsToAdd.length)
 
     // Go through quest to add Ids and insert them into daily quests
-    let todayDate = new Date();
-    todayDate.setHours(0,0,0);
-    let todayStart = Util.getSecondsSinceEpoch(new Date(todayDate));
-    todayDate.setHours(23, 59, 59);
-    let todayEnd = Util.getSecondsSinceEpoch(new Date(todayDate));
+    let todayStart = Util.getDayStartEnd(new Date())[0];
+    let todayEnd = Util.getDayStartEnd(new Date())[1];
 
     for (let i = 0; i < questsToAdd.length; i++) {
         console.log("adding quests loop, i=" + i + ",questsToaddLength="+questsToAdd.length);
