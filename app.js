@@ -92,6 +92,10 @@ const main = () => {
     rewardManagerLoadList();
     dailyQuestsLoad();
 
+    // Check whether there's a need for daily quests being generated
+    let HOW_MANY_QUESTS = 3;
+    ensureDailyQuestGeneration(HOW_MANY_QUESTS);
+
     // Countdown init for daily quests page
     updateDailyQuestsTimeRemaining();
     setInterval(updateDailyQuestsTimeRemaining, 1000);
@@ -194,6 +198,80 @@ const buyReward = rewardId => {
     rewardStoreLoad();
     return false;
 }
+
+const addQuestsRandomlyWithoutDuplicates = questCount => {
+    // Get quests already scheduled for today
+    let todayQuests = getDailyQuests();
+    let todayQuestsGuids = [];
+    for (let i = 0; i < todayQuests.length; i++) {
+        todayQuestsGuids.push(todayQuests[i].questBlueprintId);
+    }
+    console.log("Quests already scheduled for today:" + todayQuests);
+
+    // Get all quests blueprints that are not scheduled for today
+    let questNotCompletedToday = alasql("SELECT * FROM " + QuestsBPTableName + " WHERE questId NOT in @(?)", [todayQuestsGuids]);
+    let notCompletedTodayGuids = [];
+    for (let i = 0; i < questNotCompletedToday.length; i++) {
+        notCompletedTodayGuids.push(questNotCompletedToday[i].questId);
+    }
+    console.log("Quests not schedulde for today: ");
+    console.log(questNotCompletedToday)
+    console.log(notCompletedTodayGuids);
+    if (notCompletedTodayGuids.length == 0) {
+        console.log("Can't add more quests, because everything was already completed today.");
+        closeModal("select-quest-modal");
+        return;
+    }
+
+    // Randomly select quest blueprint IDs to be added
+    // FYI: If there is a request to add more quests than there is in quests available
+    // (or than there is "not completed today" quests completed), only uncompleted quests
+    // will be added and application doesn't report it. Possible usability thing.
+    let questsToAdd = [];
+    for (let i = 0; i < questCount; i++) {
+        console.log("quests to add loop")
+        let randomQuestGuid = Util.randomChoice(notCompletedTodayGuids);
+        questsToAdd.push(randomQuestGuid);
+
+        let toRemove = notCompletedTodayGuids.indexOf(randomQuestGuid);
+        notCompletedTodayGuids.splice(toRemove, 1);
+
+        if (notCompletedTodayGuids.length == 0) {
+            console.log("Can't add more quests, because everything was already completed today.");
+            break;
+        }
+    }
+    console.log("quests to add:" + questsToAdd)
+    console.log("quests to add length= " + questsToAdd.length)
+
+    // Go through quest to add Ids and insert them into daily quests
+    let todayStart = Util.getDayStartEnd(new Date())[0];
+    let todayEnd = Util.getDayStartEnd(new Date())[1];
+
+    for (let i = 0; i < questsToAdd.length; i++) {
+        console.log("adding quests loop, i=" + i + ",questsToaddLength="+questsToAdd.length);
+        let questId = crypto.randomUUID();
+        let questBlueprintId = questsToAdd[i];
+        let questActiveStart = todayStart;
+        let questActiveEnd = todayEnd;
+        let questStatus = "ASSIGNED";
+
+        let insertedRows = alasql("INSERT INTO " + QuestsTableName + "(questId, questBlueprintId, activeStart, activeEnd, questStatus) VALUES (?, ?, ?, ?, ?)", [questId, questBlueprintId, questActiveStart, questActiveEnd, questStatus]);
+
+        console.log("Inserted rows=" + insertedRows)
+
+    }
+}
+
+const ensureDailyQuestGeneration = (questCount) => {
+    let questsToday = getDailyQuests();
+
+    if (questsToday.length < 1) {
+        addQuestsRandomlyWithoutDuplicates(questCount);
+    } else { console.log("Not pre-generating any daily quests because there are already quests for today."); }
+    
+    dailyQuestsLoad();
+};
 
 const getDailyQuests = () => {
     let todayStart = Util.getDayStartEnd(new Date())[0];
@@ -443,8 +521,6 @@ const closeModal = modalId => {
     $('#'+modalId).modal("hide");
 }
 
-// TBD: Function to add quests that are not added yet?
-
 const addQuestsRandomly = event => {
     event.preventDefault();
 
@@ -452,68 +528,9 @@ const addQuestsRandomly = event => {
     let howManyQuests = document.getElementById("add-quests-randomly-amount");
     howManyQuests = parseInt(howManyQuests.value);
     console.log("User wants to randomly add " + howManyQuests + " quests")
+    
+    addQuestsRandomlyWithoutDuplicates(howManyQuests);
 
-    // Get quests already scheduled for today
-    let todayQuests = getDailyQuests();
-    let todayQuestsGuids = [];
-    for (let i = 0; i < todayQuests.length; i++) {
-        todayQuestsGuids.push(todayQuests[i].questBlueprintId);
-    }
-    console.log("Quests already scheduled for today:" + todayQuests);
-
-    // Get all quests blueprints that are not scheduled for today
-    let questNotCompletedToday = alasql("SELECT * FROM " + QuestsBPTableName + " WHERE questId NOT in @(?)", [todayQuestsGuids]);
-    let notCompletedTodayGuids = [];
-    for (let i = 0; i < questNotCompletedToday.length; i++) {
-        notCompletedTodayGuids.push(questNotCompletedToday[i].questId);
-    }
-    console.log("Quests not schedulde for today: ");
-    console.log(questNotCompletedToday)
-    console.log(notCompletedTodayGuids);
-    if (notCompletedTodayGuids.length == 0) {
-        console.log("Can't add more quests, because everything was already completed today.");
-        closeModal("select-quest-modal");
-        return;
-    }
-
-    // Randomly select quest blueprint IDs to be added
-    // FYI: If there is a request to add more quests than there is in quests available
-    // (or than there is "not completed today" quests completed), only uncompleted quests
-    // will be added and application doesn't report it. Possible usability thing.
-    let questsToAdd = [];
-    for (let i = 0; i < howManyQuests; i++) {
-        console.log("quests to add loop")
-        let randomQuestGuid = Util.randomChoice(notCompletedTodayGuids);
-        questsToAdd.push(randomQuestGuid);
-
-        let toRemove = notCompletedTodayGuids.indexOf(randomQuestGuid);
-        notCompletedTodayGuids.splice(toRemove, 1);
-
-        if (notCompletedTodayGuids.length == 0) {
-            console.log("Can't add more quests, because everything was already completed today.");
-            break;
-        }
-    }
-    console.log("quests to add:" + questsToAdd)
-    console.log("quests to add length= " + questsToAdd.length)
-
-    // Go through quest to add Ids and insert them into daily quests
-    let todayStart = Util.getDayStartEnd(new Date())[0];
-    let todayEnd = Util.getDayStartEnd(new Date())[1];
-
-    for (let i = 0; i < questsToAdd.length; i++) {
-        console.log("adding quests loop, i=" + i + ",questsToaddLength="+questsToAdd.length);
-        let questId = crypto.randomUUID();
-        let questBlueprintId = questsToAdd[i];
-        let questActiveStart = todayStart;
-        let questActiveEnd = todayEnd;
-        let questStatus = "ASSIGNED";
-
-        let insertedRows = alasql("INSERT INTO " + QuestsTableName + "(questId, questBlueprintId, activeStart, activeEnd, questStatus) VALUES (?, ?, ?, ?, ?)", [questId, questBlueprintId, questActiveStart, questActiveEnd, questStatus]);
-
-        console.log("Inserted rows=" + insertedRows)
-
-    }
     closeModal("select-quest-modal");
     dailyQuestsLoad();
 }
