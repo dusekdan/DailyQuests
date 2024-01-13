@@ -15,6 +15,25 @@ const getSecondsSinceEpoch = date => {
     return Math.floor(milliseconds/1000);
 }
 
+/**
+ * Gets day start and end in seconds since epoch
+ * for date provided.
+ */
+const getDayStartEnd = dayDate => {
+    let tuple = [];
+    
+    dayDate.setHours(0,0,0);
+    tuple.push(
+        Utils.getSecondsSinceEpoch(new Date(dayDate))
+    );
+
+    dayDate.setHours(23,59,59);
+    tuple.push(
+        Utils.getSecondsSinceEpoch(new Date(dayDate))
+    );
+
+    return tuple;
+}
 
 /**
  * Performs a reset for all inputs belonging to a specific
@@ -190,6 +209,7 @@ function secondsToHumanReadableTimeRemaining(scnd) {
 // Time related
 Utils.getSecondsSinceEpoch = getSecondsSinceEpoch;
 Utils.secondsToHumanReadableTimeRemaining = secondsToHumanReadableTimeRemaining;
+Utils.getDayStartEnd = getDayStartEnd;
 
 // Form processing related
 Utils.resetForm = resetForm;
