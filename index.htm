@@ -48,7 +48,7 @@
         SEE AND COMPLETE DAILY QUESTS
     -->
     <div id="user-info">
-        <button class="button-sm btn-dark" onclick="_debug_createQuest()">+</button>
+        <button class="button-sm btn-dark" data-bs-toggle="modal" data-bs-target="#select-quest-modal">+</button>
         <span><span id="display-username">$USER</span>, <span id="display-currency">$CURRENCY</span> points</span>
     </div>
     
@@ -204,6 +204,41 @@
 
     <div id="error"></div>
     <div id="debug"></div>
+
+
+    <!-- ADD QUEST SELECTION MODAL START -->
+    <div class="modal fade" id="select-quest-modal" aria-labelledby="select-quest-modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="select-quest-modal-label">Select quest...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form id="add-quests-randomly-form" method="post" action="#">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Add randomly</span>
+                    <input type="number" class="form-control" id="add-quests-randomly-amount" aria-label="number of quests to add" value="3">
+                    <input type="submit" class="btn btn-primary form-control" value="Add">
+                </div>
+                </form>
+
+                <p>Click on the quest you wish to add to your day.</p>
+
+                <div class="card" style="width: 95%;">
+                    <ul class="list-group list-group-flush" id="add-quests-by-selection">
+
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- ADD QUEST SELECTION MODAL END -->
 
 </body>
 </html>

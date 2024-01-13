@@ -195,16 +195,18 @@ const buyReward = rewardId => {
     return false;
 }
 
-
-const dailyQuestsLoad = () => {
-    // select quests available today
+const getDailyQuests = () => {
     let todayDate = new Date();
     todayDate.setHours(0,0,0);
     let todayStart = Util.getSecondsSinceEpoch(new Date(todayDate));
     todayDate.setHours(23, 59, 59);
     let todayEnd = Util.getSecondsSinceEpoch(new Date(todayDate));
 
-    let todaysQuests = alasql("SELECT * FROM " + QuestsTableName + " WHERE activeStart BETWEEN ? AND ? AND activeEnd BETWEEN ? AND ? AND questStatus == 'ASSIGNED'", [todayStart, todayEnd, todayStart, todayEnd])
+    return alasql("SELECT * FROM " + QuestsTableName + " WHERE activeStart BETWEEN ? AND ? AND activeEnd BETWEEN ? AND ? AND questStatus == 'ASSIGNED'", [todayStart, todayEnd, todayStart, todayEnd]);
+}
+
+const dailyQuestsLoad = () => {
+    let todaysQuests = getDailyQuests();
 
     console.log("Quests available for today:")
     console.log(todaysQuests);
@@ -336,6 +338,9 @@ const attachUIElementListeners = () => {
             displayPage(linkTarget.textContent.trim());
         });
     });
+
+    // Attach "add quests randomly listener"
+    document.getElementById("add-quests-randomly-form").addEventListener("submit", addQuestsRandomly);
 }
 
 const questManagerLoadList = () => {
@@ -353,6 +358,23 @@ const questManagerLoadList = () => {
         
         tr.innerHTML = trHtmlContents;
         managerQuestList.appendChild(tr);
+    }
+
+    // In a same manner, populate the modal for adding quests
+    let addQuestSelectionList = document.getElementById("add-quests-by-selection");
+
+    addQuestSelectionList.replaceChildren();
+    for (let i = 0; i < quests.length; i++) {
+        let liElement = document.createElement("li");
+        liElement.classList.add("list-group-item");
+
+        liHtmlContent = "<a class='btn btn-small btn-success' href='#' onclick='addQuestByBlueprintId(\""+quests[i].questId+"\")'>Add</a>"
+        liHtmlContent += "  <strong>" + quests[i].questName + "</strong> <br>";
+        liHtmlContent += quests[i].questDescription
+
+        liElement.innerHTML = liHtmlContent
+
+        addQuestSelectionList.appendChild(liElement);
     }
 }
 
@@ -418,6 +440,110 @@ const addQuestFormSubmit = event => {
 
     Util.resetForm("add-quest-form");
     questManagerLoadList();
+}
+
+const closeModal = modalId => {
+    $('#'+modalId).modal("hide");
+}
+
+// TBD: Function to add quests that are not added yet?
+
+const addQuestsRandomly = event => {
+    event.preventDefault();
+
+    console.log("Called add quests randomly")
+    let howManyQuests = document.getElementById("add-quests-randomly-amount");
+    howManyQuests = parseInt(howManyQuests.value);
+    console.log("User wants to randomly add " + howManyQuests + " quests")
+
+    // Get quests already scheduled for today
+    let todayQuests = getDailyQuests();
+    let todayQuestsGuids = [];
+    for (let i = 0; i < todayQuests.length; i++) {
+        todayQuestsGuids.push(todayQuests[i].questBlueprintId);
+    }
+    console.log("Quests already scheduled for today:" + todayQuests);
+
+    // Get all quests blueprints that are not scheduled for today
+    let questNotCompletedToday = alasql("SELECT * FROM " + QuestsBPTableName + " WHERE questId NOT in @(?)", [todayQuestsGuids]);
+    let notCompletedTodayGuids = [];
+    for (let i = 0; i < questNotCompletedToday.length; i++) {
+        notCompletedTodayGuids.push(questNotCompletedToday[i].questId);
+    }
+    console.log("Quests not schedulde for today: ");
+    console.log(questNotCompletedToday)
+    console.log(notCompletedTodayGuids);
+    if (notCompletedTodayGuids.length == 0) {
+        console.log("Can't add more quests, because everything was already completed today.");
+        closeModal("select-quest-modal");
+        return;
+    }
+
+    // Randomly select quest blueprint IDs to be added
+    // FYI: If there is a request to add more quests than there is in quests available
+    // (or than there is "not completed today" quests completed), only uncompleted quests
+    // will be added and application doesn't report it. Possible usability thing.
+    let questsToAdd = [];
+    for (let i = 0; i < howManyQuests; i++) {
+        console.log("quests to add loop")
+        let randomQuestGuid = Util.randomChoice(notCompletedTodayGuids);
+        questsToAdd.push(randomQuestGuid);
+
+        let toRemove = notCompletedTodayGuids.indexOf(randomQuestGuid);
+        notCompletedTodayGuids.splice(toRemove, 1);
+
+        if (notCompletedTodayGuids.length == 0) {
+            console.log("Can't add more quests, because everything was already completed today.");
+            break;
+        }
+    }
+    console.log("quests to add:" + questsToAdd)
+    console.log("quests to add length= " + questsToAdd.length)
+
+    // Go through quest to add Ids and insert them into daily quests
+    let todayDate = new Date();
+    todayDate.setHours(0,0,0);
+    let todayStart = Util.getSecondsSinceEpoch(new Date(todayDate));
+    todayDate.setHours(23, 59, 59);
+    let todayEnd = Util.getSecondsSinceEpoch(new Date(todayDate));
+
+    for (let i = 0; i < questsToAdd.length; i++) {
+        console.log("adding quests loop, i=" + i + ",questsToaddLength="+questsToAdd.length);
+        let questId = crypto.randomUUID();
+        let questBlueprintId = questsToAdd[i];
+        let questActiveStart = todayStart;
+        let questActiveEnd = todayEnd;
+        let questStatus = "ASSIGNED";
+
+        let insertedRows = alasql("INSERT INTO " + QuestsTableName + "(questId, questBlueprintId, activeStart, activeEnd, questStatus) VALUES (?, ?, ?, ?, ?)", [questId, questBlueprintId, questActiveStart, questActiveEnd, questStatus]);
+
+        console.log("Inserted rows=" + insertedRows)
+
+    }
+    closeModal("select-quest-modal");
+    dailyQuestsLoad();
+}
+
+// function to add quest by id
+const addQuestByBlueprintId = blueprintId => {
+    let blueprint = alasql("SELECT * FROM "  + QuestsBPTableName + " WHERE questId = ?", [blueprintId]);
+    if (blueprint.length < 1){
+        console.log("No quest blueprint with ID " + blueprintId)
+        return;
+    }
+    blueprint = blueprint[0];
+
+    let questId = crypto.randomUUID();
+    let questBlueprintId = blueprint.questId;
+    let questActiveStart = Util.getDayStartEnd(new Date())[0];
+    let questActiveEnd = Util.getDayStartEnd(new Date())[1];
+    let questStatus = "ASSIGNED";
+
+    let insertedRows = alasql("INSERT INTO " + QuestsTableName + "(questId, questBlueprintId, activeStart, activeEnd, questStatus) VALUES (?, ?, ?, ?, ?)", [questId, questBlueprintId, questActiveStart, questActiveEnd, questStatus]);
+
+    console.log("Inserted rows=" + insertedRows)
+    closeModal("select-quest-modal");
+    dailyQuestsLoad();
 }
 
 
