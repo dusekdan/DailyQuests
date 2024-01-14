@@ -94,7 +94,7 @@ const shuffleArray = array => {
  * Returns array of id:value pairs for given form, as identified by id. 
  */
 const collectFormInputtedValues = formId => {
-    let allInputsSelector = "#" + formId +">input,#" + formId+">select,#" + formId+">textarea"
+    let allInputsSelector = "#" + formId +" input,#" + formId+" select,#" + formId+" textarea"
     let inputElements = document.querySelectorAll(allInputsSelector);
     
     let values = {}
