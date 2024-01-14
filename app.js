@@ -57,13 +57,59 @@ const ensureDatabaseAvailable = () => {
 const ensureLocalStateStore = () => {
 
     if (localStorage.getItem("GameState") == null) {
-        let gameStateStruct = { rewardStore: {rewards: [], purchase: []}, userData: { name: "IllegalPrime", currency: 200, dailyQuestsLimit: 25, dailyQuestsCategoryLimits: [{categoryId: undefined, limit: 10}]}, uiData: {lastOpenedPage: "Daily Quests"} }
+        let gameStateStruct = { rewardStore: {rewards: [], purchase: []}, userData: { name: "Armored Lynx", currency: 200, dailyQuestsLimit: 25, dailyQuestsCategoryLimits: [{categoryId: undefined, limit: 10}]}, uiData: {lastOpenedPage: "Daily Quests"}, seeded: false }
 
         localStorage.setItem("GameState", JSON.stringify(gameStateStruct));
     }
 
     let gameState = JSON.parse(localStorage.getItem("GameState"))
     // TODO: Implement validation and seeding logic
+
+    if (gameState.seeded == undefined || gameState.seeded == false){
+        let seeding = {
+            "quests": [
+                ["654f5042-11fe-477e-8429-974e467154bc", "5K Run", "Go out and get a 5K run in.", 250, "Default"],
+                ["e3b96c02-11a9-4400-9d0d-48eb7b91613a", "10K Run", "Go out and get a 10 run in.", 600, "Default"],
+                ["bc61b965-868d-4828-83f5-d257f55f1458", "Clean up workspace", "Wherever you conduct your work from, make sure it's well organized.", 80, "Default"],
+                ["39433db3-0da4-45e9-acde-c6c688f5a746", "Brush your teeth (morning)", "", 20, "Default"],
+                ["8a882a79-bb4f-4e06-8bcc-80f9bbfbb2ea", "Brush your teeth (evening)", "", 20, "Default"],
+                ["d0dfad73-bca8-4eda-a7e3-b5960d085e1e", "60 minutes of sweat and lift.", "Hit the gym for a minimum of 60 minutes. Yes, the warmup counts.", 300, "Default"],
+                ["f9b0f9b5-acde-4795-ba48-14810741aefe", "Scholarly interest", "Go study something in your area of interest for 25 minutes.", 200, "Default"],
+                ["19700e46-754a-47de-8753-f9b43f112928", "Academic potentiation", "Go study something in your area of interest for 60 minutes.", 500, "Default"],
+                ["15420696-0116-49b4-b347-aabb66f3137b", "Laundry", "Today is the day. Do the laundry.", 50, "Default"],
+                ["8e10fa78-a228-4940-a81d-0a506366a1a9", "Excursionist", "Go for a 2 kilometer walk.", 100, "Default"],
+                ["55ae88be-3b51-4162-bafc-769027ec938f", "Journeyer", "Go for a 5 kilometer walk.", 300, "Default"],
+                ["8596adfb-dac2-4940-bee6-5aa3d202096e", "Voyager", "Go for a 10 kilometer walk.", 700, "Default"],
+                ["d1d35d06-74d3-4cc4-b1ba-354275da7b9e", "Globetrotter", "Go for a 25 kilometer walk.", 1800, "Default"]
+            ],
+            "rewards": [
+                ["cf205d3f-cd62-49a7-ac67-0d48aced40c1", "1 Episode", "You can watch 1 episode of your favorite series.", 185],
+                ["1d1c0388-28c4-44cd-ae47-4645dc3e3e19", "Watch a movie", "You can go watch a movie.", 250],
+                ["8575913d-58f1-4ef0-87d0-fbef16749791", "Pizza Pass", "You are allowed to order and eat one whole pizza.", 500],
+                ["c7131dab-190b-4f8f-af37-6e265a0efa28", "Favorite drink", " You can buy yourself your favorite drink. Even if it's not exactly a healthy drink.", 330],
+                ["94c2fd6d-ae29-4815-abbd-c5735eb04881", "1 sleep-in pass", "Tomorrow, you don't have to wake up on time. Maybe it's because you want to go easy on you, maybe it's because you only arrived home from work late and there's no way you can sleep 8 hours if you fall asleep now. Either way, you have to buy the sleep-in pass.", 300],
+                ["f405c1de-1068-418f-98ff-6f188d363e38", "Buy yourself a gift", "This is an example of a goal to work towards. You are encouraged to think of a thing you really want to buy yourself, but feel like you should deserve it first. Then set a high enough price for it in points, and make sure you do your daily quests to earn the points for it.", 15000]
+            ]
+        }
+        console.log("Quests and rewards were not seeded. Will seed now.");
+
+        for (let i = 0; i < seeding.quests.length; i++) {
+            let questDefinition = seeding.quests[i];
+
+            let rowsInserted = alasql("INSERT INTO " + QuestsBPTableName + " (questId, questName, questDescription, questRewardAmount, questCategory) VALUES (?,?,?,?,?)", questDefinition);
+            console.log("Seeded " + rowsInserted + " quest");
+        }
+
+        for (let i = 0; i < seeding.rewards.length; i++) {
+            let rewardDefinition = seeding.rewards[i];
+
+            let rowsInserted = alasql("INSERT INTO " + RewardBPTableName + " (rewardId, rewardName, rewardDescription, rewardCost) VALUES (?,?,?,?)", rewardDefinition);
+            console.log("Seeded " + rowsInserted + " reward");
+        }
+
+        gameState.seeded = true;
+    } 
+    Util.saveUserPrefs(gameState);
 
     console.log("Loaded game state for username=" + gameState.userData.name);
 
