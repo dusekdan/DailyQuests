@@ -198,6 +198,26 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table table-sm caption-top">
+                        <caption><strong>Export / Import section - for moving between devices</strong></caption>
+                        <thead>
+                            <tr>
+                                <th><button onclick="exportEverything()">Export everything </button></th>
+                                <th><button onclick="importEverythingAndOverride()">Import and override current data</button></th>
+                            </tr>
+                        </thead>
+                        <tbody id="reward-manager-rewards-list">
+                            <tr>
+                                <td>Creates a copy-pasteable export of every quest, reward and history of quests.</td>
+                                <td>Imports the export string. This overrides everything in current state with the imported values. Be careful.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
 
         </div>
     </div>

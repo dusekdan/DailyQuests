@@ -633,7 +633,38 @@ const getActiveLinkName = () => {
 }
 
 
+const exportEverything = () => {
+    let exportString = JSON.stringify(window.localStorage);
+    prompt("Copy export string below, and paste it into import box on your new device.", exportString);
+}
 
+
+const importEverythingAndOverride = () => {
+    let importString = prompt("Paste your exported string here to override your CURRENT DEVICE's quest definitions, rewards, accummulated points and entire history, with contents of said exported string.\n\nOnly press OK, if you wish to replace everything on this device with your export string.\n\nPress CANCEL to stop the importing process.")
+    if (importString == null || importString == "") {
+        alert("No import string given. No changes applied.");
+        return;
+    }
+
+    let importStringJson;
+    try {
+        importStringJson = JSON.parse(importString);
+    } catch {
+        console.log("Import string couldn't be parsed. No changes applied.");
+        return;
+    }
+
+    // ? TODO MVP: Validate actual format of the import string
+
+    alert("Imported successfully.");
+    console.log(importStringJson);
+
+    window.localStorage.clear();
+    for (const key in importStringJson) {
+        window.localStorage.setItem(key, importStringJson[key]);
+    }
+    window.location.reload();
+}
 
 
 
