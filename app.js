@@ -635,7 +635,12 @@ const getActiveLinkName = () => {
 
 const exportEverything = () => {
     let exportString = JSON.stringify(window.localStorage);
-    prompt("Copy export string below, and paste it into import box on your new device.", exportString);
+    prompt("On computer - copy the export string below, and paste it into import box on your new device.\n\nOn mobile, copy the export string from the textarea under the export button and paste into import box on the new device.", exportString);
+    
+    let exportStringTextarea = document.querySelector("#exportPackageString");
+    exportStringTextarea.value = exportString;
+    exportStringTextarea.select();
+
 }
 
 
