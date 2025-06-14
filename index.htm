@@ -204,18 +204,14 @@
                         <caption><strong>Export / Import section - for moving between devices</strong></caption>
                         <thead>
                             <tr>
-                                <th><button onclick="exportEverything()">Export everything </button></th>
-                                <th><button onclick="importEverythingAndOverride()">Import and override current data</button></th>
+                                <th><button onclick="exportEverything()">Export</button></th>
+                                <th><input type="file" id="importFileInput"></th>
                             </tr>
                         </thead>
                         <tbody id="reward-manager-rewards-list">
                             <tr>
-                                <td>Creates a copy-pasteable export of every quest, reward and history of quests.</td>
-                                <td>Imports the export string. This overrides everything in current state with the imported values. Be careful.</td>
-                            </tr>
-                            <tr>
-                                <td><textarea style="width:100%" id="exportPackageString" class=""></textarea></td>
-                                <td>&nbsp;</td>
+                                <td>Generates export package to download.</td>
+                                <td>Select the export package from your device to import it. This overrides everything in current state with the imported values. <strong>Be careful, there's no confirmation, once you select the file from local file system, the app will consume it</strong>.</td>
                             </tr>
                         </tbody>
                     </table>

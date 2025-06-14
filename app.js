@@ -145,6 +145,9 @@ const main = () => {
     // Countdown init for daily quests page
     updateDailyQuestsTimeRemaining();
     setInterval(updateDailyQuestsTimeRemaining, 1000);
+
+    // Set Import package event listener
+    document.getElementById("importFileInput").addEventListener('change', importEverythingAndOverride);
 }
 
 const displayPage = page => {
@@ -635,40 +638,54 @@ const getActiveLinkName = () => {
 
 const exportEverything = () => {
     let exportString = JSON.stringify(window.localStorage);
-    prompt("On computer - copy the export string below, and paste it into import box on your new device.\n\nOn mobile, copy the export string from the textarea under the export button and paste into import box on the new device.", exportString);
-    
-    let exportStringTextarea = document.querySelector("#exportPackageString");
-    exportStringTextarea.value = exportString;
-    exportStringTextarea.select();
+        
+    // Prepare download package
+    const blob = new Blob([exportString], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
 
+    // Timestamp one-liner, ideal candidate for Util.js module expansion TODO
+    const timestamp = new Date().toISOString().slice(0,19).replace(/[-:T]/g, match => match === 'T' ? '_' : '');
+
+    const downloadA = document.createElement('a');
+    downloadA.href = url;
+    downloadA.download = "dailyquests_exportpkg_" + timestamp + ".json"
+    downloadA.click();
+    downloadA.remove();
 }
 
 
-const importEverythingAndOverride = () => {
-    let importString = prompt("Paste your exported string here to override your CURRENT DEVICE's quest definitions, rewards, accummulated points and entire history, with contents of said exported string.\n\nOnly press OK, if you wish to replace everything on this device with your export string.\n\nPress CANCEL to stop the importing process.")
-    if (importString == null || importString == "") {
-        alert("No import string given. No changes applied.");
+const importEverythingAndOverride = (event) => {
+
+    const file = event.target.files[0];
+    if (!file){
         return;
     }
 
-    let importStringJson;
-    try {
-        importStringJson = JSON.parse(importString);
-    } catch {
-        console.log("Import string couldn't be parsed. No changes applied.");
-        return;
-    }
+    const reader = new FileReader();
+    reader.onload = e => {
+        const contents = e.target.result;
+        console.log("File contents: ", contents);
 
-    // ? TODO MVP: Validate actual format of the import string
+        let importStringJson;
+        try {
+            importStringJson = JSON.parse(contents);
+            console.log(importStringJson)
+        } catch {
+            console.log("Import string couldn't be parsed. No changes applied.");
+            return;
+        }
 
-    alert("Imported successfully.");
-    console.log(importStringJson);
+        console.log("Import file was parsed as JSON and will be imported.");
 
-    window.localStorage.clear();
-    for (const key in importStringJson) {
-        window.localStorage.setItem(key, importStringJson[key]);
-    }
-    window.location.reload();
+        window.localStorage.clear();
+        for (const key in importStringJson) {
+            window.localStorage.setItem(key, importStringJson[key]);
+        }
+
+        window.location.reload();
+    };
+
+    reader.readAsText(file);
 }
 
 
